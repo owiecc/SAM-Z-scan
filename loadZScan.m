@@ -20,8 +20,8 @@ fid = fopen(fFullPath,'r');
 
 %% get scan parameters from header
 
-headerSize = 496;
-packetSize = 15008;
+headerSize = 496; % fixed size
+packetSize = 15008; % may be variable due to varying depth of scan /// TODO
 
 fseek(fid,480,'bof');
 imgWidth = fread(fid,1,'int16=>double');
