@@ -15,6 +15,7 @@ maxZval = max(abs([min(zData(:)) max(zData(:))]));
 %% detect first interface
 
 firstInterface = detectFirstInterface(zData);
+topSurface = removeOutliers(firstInterface);
 
 %% 
 
@@ -33,7 +34,7 @@ haAScan.YLim = [-maxZval maxZval];
 haAScan.XLim = [5000 7000];
 
 haXScan = subplot(5,1,[2:5]);
-hoXScan = imagesc(haXScan, firstInterface); % display 1st surface instead
+hoXScan = imagesc(haXScan, topSurface); % display 1st surface instead
 haXScan.PlotBoxAspectRatio = [1 1 1];
 colormap(haXScan,bone);
 %hoAScanXY = line(haXScan,x,y,'Marker','o','Color','r');
