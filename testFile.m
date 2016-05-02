@@ -17,7 +17,7 @@ maxZval = max(abs([min(zData(:)) max(zData(:))]));
 firstInterface = detectFirstInterface(zData);
 topSurface = removeOutliers(firstInterface);
 
-%% 
+%% plot A-scan and a detected top surface
 
 x = round(xSize/2);
 y = round(ySize/2);
