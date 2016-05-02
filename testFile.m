@@ -14,22 +14,7 @@ maxZval = max(abs([min(zData(:)) max(zData(:))]));
 
 %% detect first interface
 
-firstInterface = zeros(xSize,ySize);
-
-parfor ix = 1:xSize
-  for iy = 1:ySize
-    AScan = getAScan(zData,ix,iy);
-    [~,idxPeaksPos] = findpeaks(diff(AScan),'MinPeakHeight',5,'MinPeakProminence',5);
-    [~,idxPeaksNeg] = findpeaks(-diff(AScan),'MinPeakHeight',5,'MinPeakProminence',5);
-    firstPeak = min([idxPeaksPos; idxPeaksNeg]);
-    if isempty(firstPeak)
-      firstPeak = 1;
-    end
-    firstInterface(ix,iy) = firstPeak; % zData(firstPeak,ix,iy);
-  end
-  ix/xSize
-end
-firstInterface(firstInterface==1)=NaN;
+firstInterface = detectFirstInterface(zData);
 
 %% 
 
@@ -69,13 +54,21 @@ end
 
 zSurf = firstInterface(sub2ind(size(firstInterface), xSurf, ySurf));
 
-%% 
+%%
+
+[X,Y] = meshgrid(1:xSize,1:ySize);
+ha = surf(X,Y,firstInterface,'EdgeColor','none','LineStyle','none','FaceLighting','phong');
+axis off;
+ha.Parent.CLim = [5650 5900];
+colormap bone
+
+%%
 
 % run cftool first and save fit to workspace
 % exclude outliers!
 
-fittedmodel(1:2,1:2)
-
+surfacePos = reshape(fittedmodel(X(:),Y(:)), xSize, ySize);
+imagesc(surfacePos)
 
 %%
 
