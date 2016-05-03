@@ -1,14 +1,27 @@
-%function [ roi ] = regionOfInterest( zData )
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+function [ roi ] = regionOfInterest( zData )
+%regionOfInterest Finds part of zScan with actual data
+%   ROI = regionOfInterest(zData) analyses a subset of Z scan to detect 
+%   the presence of echo. Returns ROI index to be used in zData(ROI,x,y).
 
-x = 1:20:250;
-y = 1:20:250;
+% get 0.5% of xy scan area
+nAScans = round(size(zData,2)*size(zData,3)/200); 
+xy = randi(size(zData,2)*size(zData,3),nAScans,1);
 
-sx = reshape(zData(:,x,y),15008,numel(x)*numel(y)); 
-sx(sx<3) = 0; %remove noise
-sz = sum(abs(sx),2)>0;
+% get subset od zData
+sx = zData(:,xy); 
 
-roi = find(sz,1,'first')-200:1:find(sz,1,'last')+200;
+%remove noise
+sx(sx<3) = 0; 
 
-%end
+% create logical vector if signal present
+sz = sum(abs(sx),2) > 0;
+
+% find region of interest boundary (data > noise exist there)
+% right now works well with single echo. will not work good with double
+% echo. fix this /// TODO
+roiExpand = 200;
+roiFirst = max(find(sz,1,'first') - roiExpand, 1);
+roiLast = min(find(sz,1,'last') + roiExpand, size(zData,1));
+roi = roiFirst:1:roiLast;
+
+end
