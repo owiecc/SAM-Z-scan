@@ -1,7 +1,7 @@
 function [ roi ] = regionOfInterest( zData )
 %regionOfInterest Finds part of zScan with actual data
 %   ROI = regionOfInterest(zData) analyses a subset of Z scan to detect 
-%   the presence of echo. Returns ROI index to be used in zData(ROI,x,y).
+%   the presence of echo. Returns ROI index to be used in zData(ROI[],x,y).
 
 % get 0.5% of xy scan area
 nAScans = round(size(zData,2)*size(zData,3)/200); 
