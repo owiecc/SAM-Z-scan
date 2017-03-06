@@ -11,10 +11,12 @@ ySize = size(zData,3);
 
 % detect useful data range
 maxZval = max(abs([min(zData(:)) max(zData(:))]));
+roi = regionOfInterest(zData);
+roiData = zData(roi,:,:);
 
 %% detect first interface
 
-firstInterface = detectFirstInterface(zData);
+firstInterface = detectFirstInterface(roiData);
 topSurface = removeOutliers(firstInterface);
 
 %% plot A-scan and a detected top surface
@@ -22,7 +24,7 @@ topSurface = removeOutliers(firstInterface);
 x = round(xSize/2);
 y = round(ySize/2);
 
-AScan = getAScan(zData,x,y);
+AScan = getAScan(roiData,x,y);
 [~,idxPeaksPos] = findpeaks(diff(AScan),'MinPeakHeight',5,'MinPeakProminence',5);
 [~,idxPeaksNeg] = findpeaks(-diff(AScan),'MinPeakHeight',5,'MinPeakProminence',5);
 firstPeak = min([idxPeaksPos; idxPeaksNeg]);
@@ -77,9 +79,9 @@ button = 1;
 while button == 1
   switch gca
     case haAScan
-      hoXScan.CData = double(squeeze(zData(floor(x),:,:)));
+      hoXScan.CData = double(squeeze(roiData(floor(x),:,:)));
     case haXScan
-      hoAScan.YData = getAScan(zData,round(x),round(y));
+      hoAScan.YData = getAScan(roiData,round(x),round(y));
   end
   [x,y,button] = ginput(1); % check for bounds in x,y
   %   hoAScanXY.XData = x;

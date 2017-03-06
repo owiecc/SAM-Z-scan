@@ -1,4 +1,4 @@
-function [ zData ] = loadZScan( fInput )
+function zData = loadZScan(fInput)
 %loadZScan Loads Z-scan data
 %   ZDATA = loadZScan() Opens a file dialog and returns Z-scan data. Dimension 1
 %   contains sampled sensor signal. Due to memory limitations ZDATA is returned
@@ -20,22 +20,35 @@ fid = fopen(fFullPath,'r');
 
 %% get scan parameters from header
 
-headerSize = 496; % fixed size
-packetSize = 15008; % may be variable due to varying depth of scan /// TODO
+% find file size
+fseek(fid, 0, 'eof');
+fSize = ftell(fid);
 
-fseek(fid,480,'bof');
-imgWidth = fread(fid,1,'int16=>double');
+% fixed header size
+headerSize = 496;
+idxXdim = 480;
+idxYdim = 484;
 
-fseek(fid,484,'bof');
-imgHeight = fread(fid,1,'int16=>double');
+% calculate Z-scan size
+scanSize(1:2) = getDimensions(fid,[idxXdim,idxYdim]);
+scanSize(3) = (fSize - headerSize)/prod(scanSize(1:2));
 
 %% load and reshape the scan data
 
 fseek(fid,headerSize,'bof');
-fData = fread(fid,packetSize*imgWidth*imgHeight,'int8=>int8');
-zData = reshape(fData,[packetSize,imgWidth,imgHeight]);
+fData = fread(fid,prod(scanSize),'int8=>int8');
+zData = reshape(fData,[scanSize(3),scanSize(1),scanSize(2)]);
 
+% close file reference
 fclose(fid);
 
+% helper functions
+  function [xy] = getDimensions(fid,idxsDim)
+    xy = [];
+    for idxDim = idxsDim
+      fseek(fid,idxDim,'bof');
+      xy = [xy,fread(fid,1,'int16=>double')];  %#ok<AGROW>
+    end
+  end
 end
 

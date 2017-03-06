@@ -23,5 +23,6 @@ roiExpand = 200;
 roiFirst = max(find(sz,1,'first') - roiExpand, 1);
 roiLast = min(find(sz,1,'last') + roiExpand, size(zData,1));
 roi = roiFirst:1:roiLast;
+roi = roi(:);
 
 end
